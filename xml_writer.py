@@ -1,7 +1,8 @@
 import xml.etree.cElementTree as ET
 import xml.etree.ElementTree as etree
+from copy import copy
 
-def write(dashi,eday,nday,fest,months):
+def write(dashi,eday,nday,fest,holiday,months):
     root = ET.Element("Root")
 
     for month in months:
@@ -11,13 +12,13 @@ def write(dashi,eday,nday,fest,months):
         fest[month].reverse()
 
         nepali_days = [
-            "आईत\nSun",
-            "सोम\nMon",
-            "मंगल\nTue",
-            "बुध\nWed",
-            "बिही\nThu",
-            "शुक्र\nFri",
-            "शनि\nSat"]
+            ("आईत\nSun", "normal"),
+            ("सोम\nMon", "normal"),
+            ("मंगल\nTue", "normal"),
+            ("बुध\nWed", "normal"),
+            ("बिही\nThu", "normal"),
+            ("शुक्र\nFri", "normal"),
+            ("शनि\nSat", "holiday"),]
 
         aid =  'http://ns.adobe.com/AdobeInDesign/4.0/'
         aid5 =  'http://ns.adobe.com/AdobeInDesign/5.0/'
@@ -40,10 +41,12 @@ def write(dashi,eday,nday,fest,months):
                 etree.QName(aid, "crows"):"1",
                 etree.QName(aid, "ccols"):"2",
                 etree.QName(aid5, "cellstyle"):"nheader",
-                }).text = d
+                etree.QName(aid, "cstyle"):d[1],
+                }).text = d[0]
         
         # fest
-        for _ in range(5):
+        for j in range(5):
+            i = 0
             for _ in range(7):
                 ET.SubElement(table, "Cell", {
                     etree.QName(aid, "table"):"cell",
@@ -51,30 +54,42 @@ def write(dashi,eday,nday,fest,months):
                     etree.QName(aid, "ccols"):"1",
                     etree.QName(aid, "ccolwidth"):"10",
                     etree.QName(aid5, "cellstyle"):"fest",
+                    etree.QName(aid, "cstyle"):holiday[month][7*j + i],
                     }).text = fest[month].pop()
                 ET.SubElement(table, "Cell", {
                     etree.QName(aid, "table"):"cell",
                     etree.QName(aid, "crows"):"1",
                     etree.QName(aid, "ccols"):"1",
+                    etree.QName(aid, "ccolwidth"):"42",
                     etree.QName(aid5, "cellstyle"):"dashi",
+                    etree.QName(aid, "cstyle"):holiday[month][7*j + i],
                     }).text = dashi[month].pop()
+                i += 1
+            i = 0
             for _ in range(7):
                 ET.SubElement(table, "Cell", {
                     etree.QName(aid, "table"):"cell",
                     etree.QName(aid, "crows"):"1",
                     etree.QName(aid, "ccols"):"1",
+                    etree.QName(aid, "ccolwidth"):"42",
                     etree.QName(aid5, "cellstyle"):"nday",
+                    etree.QName(aid, "cstyle"):holiday[month][7*j + i],
                     }).text = nday[month].pop()
+                i += 1
+            i = 0
             for _ in range(7):
                 ET.SubElement(table, "Cell", {
                     etree.QName(aid, "table"):"cell",
                     etree.QName(aid, "crows"):"1",
                     etree.QName(aid, "ccols"):"1",
+                    etree.QName(aid, "ccolwidth"):"42",
                     etree.QName(aid5, "cellstyle"):"eday",
+                    etree.QName(aid, "cstyle"):holiday[month][7*j + i],
                     }).text = eday[month].pop()
+                i += 1
 
     
 
 
     tree = ET.ElementTree(root)
-    tree.write("filename.xml",  encoding='UTF-8', xml_declaration=True)
+    tree.write("output.xml",  encoding='UTF-8', xml_declaration=True)

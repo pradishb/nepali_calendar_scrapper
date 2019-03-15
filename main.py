@@ -5,29 +5,31 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 months = ["Baisakh",
-        #   "Jestha",
-        #   "Ashad",
-        #   "Shrawan",
-        #   "Bhadra",
-        #   "Ashwin",
-        #   "Kartik",
-        #   "Mangshir",
-        #   "Poush",
-        #   "Magh",
-        #   "Falgun",
-        #   "Chaitra",
+          "Jestha",
+          "Ashad",
+          "Shrawan",
+          "Bhadra",
+          "Ashwin",
+          "Kartik",
+          "Mangshir",
+          "Poush",
+          "Magh",
+          "Falgun",
+          "Chaitra",
           ]
 
 dashi_l = {}
 nday_l = {}
 eday_l = {}
 fest_l = {}
+holiday_l = {}
 
 for month in months:
     dashi_l[month] = []
     nday_l[month] = []
     eday_l[month] = []
     fest_l[month] = []
+    holiday_l[month] = []
 
     s = urlopen("http://nepalicalendar.rat32.com/index_nep.php?year=2076&month="+month +
                 "&dowhat=nepali-calendar-horoscope-game-download-unicode-new-year-mobile-calendar&view=b86e8d03fe992d1b0e19656875ee557c").read()
@@ -50,8 +52,14 @@ for month in months:
                 if i == 2:
                     if (nday[j+w*7].font.string != None):
                         nday_l[month].append(nday[j+w*7].font.string)
+                        if nday[j+w*7].font["color"] == "red":
+                            holiday_l[month].append("holiday")
+                        else:
+                            holiday_l[month].append("normal")
+
                     else:
                         nday_l[month].append(" ")
+                        holiday_l[month].append("normal")
 
                 if i == 3:
                     if (eday[j+w*7].font.string != None):
@@ -69,4 +77,4 @@ for month in months:
                     else:
                         fest_l[month].append(" ")
 
-xml_writer.write(dashi_l, eday_l, nday_l, fest_l, months)
+xml_writer.write(dashi_l, eday_l, nday_l, fest_l, holiday_l, months)
