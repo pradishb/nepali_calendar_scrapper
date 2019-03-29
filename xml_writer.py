@@ -26,8 +26,8 @@ def write(dashi,eday,nday,fest,holiday,months):
         for attr, uri in ns.items():
             etree.register_namespace(attr.split(":")[1], uri)
 
-        
-        table = ET.SubElement(root, "Table", {
+        sub_root = table = ET.SubElement(root, "Root")
+        table = ET.SubElement(sub_root, "Table", {
             etree.QName(aid, "table"):"table",
             etree.QName(aid, "trows"):"16",
             etree.QName(aid, "tcols"):"14",
