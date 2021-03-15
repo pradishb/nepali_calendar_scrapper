@@ -3,9 +3,6 @@ import xml.etree.ElementTree as etree
 
 from constants import MONTHS
 
-FESTIVAL_WIDTH = '10'  # for ghampani
-DAY_WIDTH = '42'  # for ghampani
-
 
 def write(dashi, eday, nday, fest, holiday):
     root = ET.Element('Root')
@@ -35,7 +32,7 @@ def write(dashi, eday, nday, fest, holiday):
         table = ET.SubElement(sub_root, 'Table', {
             etree.QName(aid, 'table'): 'table',
             etree.QName(aid, 'trows'): '16',
-            etree.QName(aid, 'tcols'): '14',
+            etree.QName(aid, 'tcols'): '7',
             etree.QName(aid5, 'tablestyle'): 'month',
         })
 
@@ -44,55 +41,50 @@ def write(dashi, eday, nday, fest, holiday):
             ET.SubElement(table, 'Cell', {
                 etree.QName(aid, 'table'): 'cell',
                 etree.QName(aid, 'crows'): '1',
-                etree.QName(aid, 'ccols'): '2',
+                etree.QName(aid, 'ccols'): '1',
                 etree.QName(aid5, 'cellstyle'): 'nheader',
                 etree.QName(aid, 'cstyle'): d[1],
             }).text = d[0]
 
+        # fest
         for j in range(5):
-
-            # festivals and dashi, colspan=3
             i = 0
             for _ in range(7):
-                ET.SubElement(table, 'Cell', {
-                    etree.QName(aid, 'table'): 'cell',
-                    etree.QName(aid, 'crows'): '3',
-                    etree.QName(aid, 'ccols'): '1',
-                    etree.QName(aid, 'ccolwidth'): FESTIVAL_WIDTH,
-                    etree.QName(aid5, 'cellstyle'): 'fest',
-                    etree.QName(aid, 'cstyle'): holiday[month][7*j + i],
-                }).text = fest[month].pop()
+                # ET.SubElement(table, 'Cell', {
+                #     etree.QName(aid, 'table'):'cell',
+                #     etree.QName(aid, 'crows'):'3',
+                #     etree.QName(aid, 'ccols'):'1',
+                #     etree.QName(aid, 'ccolwidth'):'10',
+                #     etree.QName(aid5, 'cellstyle'):'fest',
+                #     etree.QName(aid, 'cstyle'):holiday[month][7*j + i],
+                #     }).text = fest[month].pop()
                 ET.SubElement(table, 'Cell', {
                     etree.QName(aid, 'table'): 'cell',
                     etree.QName(aid, 'crows'): '1',
                     etree.QName(aid, 'ccols'): '1',
-                    etree.QName(aid, 'ccolwidth'): DAY_WIDTH,
+                    etree.QName(aid, 'ccolwidth'): '33.204',
                     etree.QName(aid5, 'cellstyle'): 'dashi',
                     etree.QName(aid, 'cstyle'): holiday[month][7*j + i],
                 }).text = dashi[month].pop()
                 i += 1
-
-            # nepali date
             i = 0
             for _ in range(7):
                 ET.SubElement(table, 'Cell', {
                     etree.QName(aid, 'table'): 'cell',
                     etree.QName(aid, 'crows'): '1',
                     etree.QName(aid, 'ccols'): '1',
-                    etree.QName(aid, 'ccolwidth'): DAY_WIDTH,
+                    etree.QName(aid, 'ccolwidth'): '33.204',
                     etree.QName(aid5, 'cellstyle'): 'nday',
                     etree.QName(aid, 'cstyle'): holiday[month][7*j + i],
                 }).text = nday[month].pop()
                 i += 1
-
-            # english date
             i = 0
             for _ in range(7):
                 ET.SubElement(table, 'Cell', {
                     etree.QName(aid, 'table'): 'cell',
                     etree.QName(aid, 'crows'): '1',
                     etree.QName(aid, 'ccols'): '1',
-                    etree.QName(aid, 'ccolwidth'): DAY_WIDTH,
+                    etree.QName(aid, 'ccolwidth'): '33.204',
                     etree.QName(aid5, 'cellstyle'): 'eday',
                     etree.QName(aid, 'cstyle'): holiday[month][7*j + i],
                 }).text = eday[month].pop()

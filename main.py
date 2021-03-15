@@ -1,35 +1,56 @@
 
 
 '''Main module'''
-from urllib.request import urlopen
+import json
 
 from bs4 import BeautifulSoup
+from requests_futures.sessions import FuturesSession
 from tqdm import tqdm
 
 import xml_writer
 from args import args
 from constants import MONTHS
+from constants import URL
+
+
+def get_raw_data(year):
+    session = FuturesSession()
+    futures = [{
+        'month': m,
+        'future': session.get(URL.format(year=year, month=m), timeout=30),
+    } for m in MONTHS]
+    pbar = tqdm(total=len(futures))
+    data = []
+    for future in futures:
+        response = future['future'].result()
+        data.append({'month': future['month'], 'data': response.content.decode('utf-8')})
+        pbar.update()
+
+    return data
 
 
 def main():
     '''Main function'''
+    if args.data is None:
+        data = get_raw_data(args.year)
+    else:
+        with open(args.data) as fp:
+            data = json.load(fp)
     dashi_l = {}
     nday_l = {}
     eday_l = {}
     fest_l = {}
     holiday_l = {}
 
-    for month in tqdm(MONTHS):
+    for month_data in data:
+        month = month_data['month']
         dashi_l[month] = []
         nday_l[month] = []
         eday_l[month] = []
         fest_l[month] = []
         holiday_l[month] = []
 
-        url = f'http://nepalicalendar.rat32.com/index_nep.php?year={args.year}&month={month}'
-        s = urlopen(url).read()
-
-        soup = BeautifulSoup(s, 'html.parser')
+        soup = BeautifulSoup(month_data['data'], 'html.parser')
         dashi = soup.findAll('div', {'id': 'dashi'})
         nday = soup.findAll('div', {'id': 'nday'})
         eday = soup.findAll('div', {'id': 'eday'})
